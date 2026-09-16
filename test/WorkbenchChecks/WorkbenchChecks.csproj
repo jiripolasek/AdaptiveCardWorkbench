@@ -11,5 +11,8 @@
     <Compile Include="../../src/AdaptiveCardWorkbench/Services/WorkbenchJsonSerializerContext.cs" />
     <Compile Include="../../src/AdaptiveCardWorkbench/Services/WorkspaceService.cs" />
     <Compile Include="../../src/AdaptiveCardWorkbench/Services/JsonFormatting.cs" />
+    <Compile Include="../../src/AdaptiveCardWorkbench/Services/AdaptiveCardCompletion.cs" />
+    <EmbeddedResource Include="../../src/AdaptiveCardWorkbench/Assets/adaptive-card.json" LogicalName="AdaptiveCardWorkbench.adaptive-card.json" />
+    <EmbeddedResource Include="../../src/AdaptiveCardWorkbench/Assets/Schemas/*.json" LogicalName="AdaptiveCardWorkbench.Schemas.%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

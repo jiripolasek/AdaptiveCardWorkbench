@@ -14,6 +14,8 @@ Adaptive Card Workbench uses the following Adaptive Cards SDK packages:
 
 Copyright © Microsoft Corporation. All rights reserved.
 
+The bundled [Adaptive Cards 1.1–1.6 JSON schemas](https://github.com/microsoft/AdaptiveCards/tree/main/schemas) and [1.0 schema](https://github.com/microsoft/AdaptiveCards/blob/v1.0/schemas/adaptive-card.json) are also from this project and are covered by its MIT license.
+
 ### AdaptiveCards.ObjectModel.WinUI3 and AdaptiveCards.Rendering.WinUI3
 
 MICROSOFT SOFTWARE LICENSE TERMS

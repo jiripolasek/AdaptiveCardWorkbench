@@ -31,6 +31,8 @@
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
+    <EmbeddedResource Include="Assets\adaptive-card.json" LogicalName="AdaptiveCardWorkbench.adaptive-card.json" />
+    <EmbeddedResource Include="Assets\Schemas\*.json" LogicalName="AdaptiveCardWorkbench.Schemas.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

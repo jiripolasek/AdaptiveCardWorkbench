@@ -11,6 +11,8 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Windows.Foundation;
 using WinUIEditor;
 using VirtualKey = Windows.System.VirtualKey;
 
@@ -220,6 +222,7 @@ public sealed partial class WorkbenchPage : Page
     private void LoadEditorText(CodeEditorControl control, string text)
     {
         control.Editor.SetText(text);
+        control.Editor.AutoCCancel();
         control.Editor.SetSel(0, 0);
         control.Editor.XOffset = 0;
         control.Editor.ScrollCaret();
@@ -240,6 +243,10 @@ public sealed partial class WorkbenchPage : Page
         ConfigureEditor(DataEditor);
         PayloadEditor.Editor.Modified += Editor_Modified;
         DataEditor.Editor.Modified += Editor_Modified;
+        PayloadEditor.Editor.AutoCSeparator = '\n';
+        PayloadEditor.Editor.AutoCIgnoreCase = true;
+        PayloadEditor.Editor.CharAdded += (_, _) => ShowPayloadCompletion();
+        PayloadEditor.Editor.AutoCSelection += PayloadCompletion_Selected;
         UpdateEditorCommandStates();
         UpdateMaximizeButtons();
     }
@@ -255,6 +262,89 @@ public sealed partial class WorkbenchPage : Page
         control.Editor.WrapMode = Wrap.None;
         control.Editor.ScrollWidthTracking = true;
         control.Editor.LayoutCache = LineCache.Document;
+    }
+
+    private void PayloadCompletion_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        args.Handled = true;
+        ShowPayloadCompletion();
+    }
+
+    private void ShowPayloadCompletion()
+    {
+        if (_isLoadingEditors || _activeDocument is null) return;
+        Editor editor = PayloadEditor.Editor;
+        if (!editor.SelectionEmpty) return;
+        AdaptiveCardCompletion.Completion? completion = AdaptiveCardCompletion.Get(GetEditorText(PayloadEditor), (int)editor.CurrentPos);
+        if (completion is null)
+        {
+            editor.AutoCCancel();
+            return;
+        }
+
+        editor.AutoCShow(editor.CurrentPos - completion.Start, string.Join('\n', completion.Items));
+        // WinUIEdit opens its popup asynchronously and can place it above the editor's caret.
+        DispatcherQueue.TryEnqueue(PositionPayloadCompletion);
+    }
+
+    private void PositionPayloadCompletion()
+    {
+        var editor = PayloadEditor.Editor;
+        if (!_isLoaded || !editor.AutoCActive() || PayloadEditor.XamlRoot is not { } root)
+        {
+            return;
+        }
+
+        var popup = VisualTreeHelper.GetOpenPopupsForXamlRoot(root)
+            .FirstOrDefault(candidate => candidate.Child is AutocompletionControl);
+        if (popup is null)
+        {
+            return;
+        }
+
+        var suggestions = (FrameworkElement)popup.Child;
+        suggestions.MaxHeight = double.PositiveInfinity;
+
+        var position = editor.CurrentPos;
+        var lineHeight = editor.TextHeight(editor.LineFromPosition(position)) / root.RasterizationScale;
+        var belowCaret = PayloadEditor.TransformToVisual(null).TransformPoint(new Point(
+            editor.PointXFromPosition(position) / root.RasterizationScale,
+            editor.PointYFromPosition(position) / root.RasterizationScale + lineHeight));
+        var availableHeight = root.Size.Height - belowCaret.Y;
+        if (availableHeight < lineHeight)
+        {
+            return;
+        }
+
+        suggestions.MaxHeight = availableHeight;
+        popup.HorizontalOffset = belowCaret.X;
+        popup.VerticalOffset = belowCaret.Y;
+    }
+
+    private void PayloadCompletion_Selected(Editor sender, AutoCSelectionEventArgs args)
+    {
+        var selectedText = args.Text;
+        var completion = AdaptiveCardCompletion.Get(GetEditorText(PayloadEditor), (int)sender.CurrentPos);
+        sender.AutoCCancel();
+        if (completion is null)
+        {
+            return;
+        }
+
+        var text = selectedText + completion.Suffix;
+        var length = Encoding.UTF8.GetByteCount(text);
+        sender.BeginUndoAction();
+        try
+        {
+            sender.TargetStart = completion.Start;
+            sender.TargetEnd = completion.End;
+            sender.ReplaceTarget(length, text);
+            sender.SetSel(completion.Start + length, completion.Start + length);
+        }
+        finally
+        {
+            sender.EndUndoAction();
+        }
     }
 
     private void EditorPreferences_Changed(object? sender, EventArgs e)
@@ -303,6 +393,17 @@ public sealed partial class WorkbenchPage : Page
         control.InvalidateArrange();
     }
 
+    private void UpdatePayloadSchema()
+    {
+        var (version, isDefault) = AdaptiveCardCompletion.DetectVersion(GetEditorText(PayloadEditor));
+        PayloadSchemaText.Text = version is null
+            ? "AC schema unavailable"
+            : $"AC {version}{(isDefault ? " (default)" : string.Empty)}";
+        ToolTipService.SetToolTip(PayloadSchemaText, version is null
+            ? "Unrecognized schema or unsupported version. Adaptive Card completion is unavailable."
+            : "Adaptive Cards schema used for JSON completion. If no version is specified, 1.6 is used.");
+    }
+
     private void Editor_Modified(Editor sender, ModifiedEventArgs e)
     {
         ModificationFlags modification = (ModificationFlags)e.ModificationType;
@@ -312,6 +413,10 @@ public sealed partial class WorkbenchPage : Page
         }
 
         UpdateEditorCommandStates();
+        if (sender == PayloadEditor.Editor)
+        {
+            UpdatePayloadSchema();
+        }
 
         if (_isLoadingEditors || _activeDocument is null)
         {

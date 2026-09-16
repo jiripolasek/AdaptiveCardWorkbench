@@ -72,10 +72,13 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Style="{StaticResource SectionTitleStyle}" Text="Card payload" />
                     <TextBlock
+                        x:Name="PayloadSchemaText"
                         Grid.Column="1"
                         Margin="12,0,0,0"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="Adaptive Card template JSON"
+                        Text="AC 1.6 (default)"
+                        TextTrimming="CharacterEllipsis"
+                        ToolTipService.ToolTip="Adaptive Cards schema used for JSON completion"
                         VerticalAlignment="Center" />
                     <CommandBar
                         Grid.Column="2"
@@ -142,7 +145,15 @@
                     AutomationProperties.Name="Card payload JSON editor"
                     HighlightingLanguage="json"
                     Style="{StaticResource CodeEditorStyle}"
-                    TabIndex="1" />
+                    TabIndex="1">
+                    <editor:CodeEditorControl.KeyboardAccelerators>
+                        <KeyboardAccelerator
+                            Key="Space"
+                            Modifiers="Control"
+                            ScopeOwner="{x:Bind PayloadEditor}"
+                            Invoked="PayloadCompletion_Invoked" />
+                    </editor:CodeEditorControl.KeyboardAccelerators>
+                </editor:CodeEditorControl>
 
                 <Thumb
                     x:Name="EditorSplitter"
