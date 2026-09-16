@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AdaptiveCardWorkbench.Pages.ResourcesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    AutomationProperties.Name="Adaptive Cards resources">
+
+    <Page.Resources>
+        <x:Double x:Key="SettingsCardWrapThreshold">560</x:Double>
+        <x:Double x:Key="SettingsCardWrapNoIconThreshold">360</x:Double>
+        <Style x:Key="ResourceLinkStyle" TargetType="HyperlinkButton">
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer HorizontalContentAlignment="Stretch">
+        <StackPanel
+            MaxWidth="820"
+            Padding="28,24"
+            HorizontalAlignment="Stretch"
+            Spacing="24">
+            <StackPanel Spacing="4">
+                <TextBlock
+                    FontSize="28"
+                    FontWeight="SemiBold"
+                    Text="Adaptive Cards resources" />
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Documentation, designers, samples, and schema references close at hand."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    Text="Current resources" />
+
+                <toolkit:SettingsCard
+                    Description="Modern documentation, feature reference, and starter-card resources."
+                    Header="Documentation hub &amp; samples">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE82D;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open the Adaptive Cards documentation hub and samples"
+                        Content="Open"
+                        NavigateUri="https://adaptivecards.microsoft.com/"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard
+                    Description="Concepts, SDK guidance, and platform documentation on Microsoft Learn."
+                    Header="Adaptive Cards documentation">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE736;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open Adaptive Cards documentation on Microsoft Learn"
+                        Content="Open"
+                        NavigateUri="https://learn.microsoft.com/en-us/adaptive-cards/"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard
+                    Description="The current visual card designer with modern features and samples."
+                    Header="Adaptive Card Designer">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE771;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open the current Adaptive Card Designer"
+                        Content="Open"
+                        NavigateUri="https://adaptivecards.microsoft.com/designer"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    Text="Legacy and schema reference" />
+
+                <toolkit:SettingsCard
+                    Description="The original browser-based designer for legacy payloads and hosts."
+                    Header="Legacy web designer">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE943;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open the legacy Adaptive Cards web designer"
+                        Content="Open"
+                        NavigateUri="https://adaptivecards.io/designer/"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard
+                    Description="A gallery of established card payloads useful for renderer testing."
+                    Header="Legacy sample gallery">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE8F1;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open the legacy Adaptive Cards sample gallery"
+                        Content="Open"
+                        NavigateUri="https://adaptivecards.io/samples/"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard
+                    Description="Browse element and action properties, versions, and JSON examples."
+                    Header="Schema explorer">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE773;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <HyperlinkButton
+                        AutomationProperties.Name="Open the Adaptive Cards schema explorer"
+                        Content="Open"
+                        NavigateUri="https://adaptivecards.io/explorer/Action.Execute.html"
+                        Style="{StaticResource ResourceLinkStyle}">
+                        <HyperlinkButton.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding}" />
+                                    <FontIcon FontSize="12" Glyph="&#xE8A7;" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HyperlinkButton.ContentTemplate>
+                    </HyperlinkButton>
+                </toolkit:SettingsCard>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

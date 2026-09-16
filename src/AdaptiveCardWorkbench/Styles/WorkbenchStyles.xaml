@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editor="using:WinUIEditor">
+
+    <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="PaneCommandBarStyle" TargetType="CommandBar">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="DefaultLabelPosition" Value="Collapsed" />
+        <Setter Property="IsDynamicOverflowEnabled" Value="False" />
+        <Setter Property="OverflowButtonVisibility" Value="Collapsed" />
+    </Style>
+
+    <Style x:Key="PaneToolbarButtonStyle" TargetType="AppBarButton">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="1,0" />
+        <Setter Property="IsCompact" Value="True" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="FocusVisualMargin" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="AppBarButton">
+                    <Border
+                        x:Name="Root"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Opacity" Value="0.45" />
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="Transparent" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="Transparent" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Viewbox
+                            Width="14"
+                            Height="14"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                            <ContentPresenter Content="{TemplateBinding Icon}" />
+                        </Viewbox>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PaneToolbarToggleButtonStyle" TargetType="AppBarToggleButton">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="1,0" />
+        <Setter Property="IsCompact" Value="True" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="FocusVisualMargin" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="AppBarToggleButton">
+                    <Border
+                        x:Name="Root"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Opacity" Value="0.45" />
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="Transparent" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="Transparent" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Checked">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedPointerOver">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedPressed">
+                                    <VisualState.Setters>
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedDisabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Opacity" Value="0.45" />
+                                        <Setter
+                                            Target="Root.Background"
+                                            Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                        <Setter
+                                            Target="Root.BorderBrush"
+                                            Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Viewbox
+                            Width="14"
+                            Height="14"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                            <ContentPresenter Content="{TemplateBinding Icon}" />
+                        </Viewbox>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PaneToolbarComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="MinHeight" Value="30" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{ThemeResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="PaneSplitterStyle" TargetType="Thumb">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+        <Setter Property="AutomationProperties.HelpText" Value="Drag to resize panes. Double-click to reset the split." />
+    </Style>
+
+    <Style x:Key="CodeEditorStyle" TargetType="editor:CodeEditorControl">
+        <Setter Property="Background" Value="{ThemeResource LayerFillColorDefaultBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="FocusVisualMargin" Value="0" />
+        <Setter Property="AutomationProperties.HelpText" Value="JSON editor. Changes are rendered and saved automatically." />
+    </Style>
+</ResourceDictionary>

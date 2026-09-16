@@ -1,0 +1,9 @@
+.vs/
+.dotnet/
+.packages/
+**/bin/
+**/obj/
+**/AppPackages/
+*.user
+*.suo
+_ReSharper.Caches/

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="AdaptiveCardWorkbench.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:selectors="using:AdaptiveCardWorkbench.Selectors"
+    xmlns:viewModels="using:AdaptiveCardWorkbench.ViewModels"
+    Title="Adaptive Card Workbench"
+    mc:Ignorable="d">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="RootLayout">
+        <Grid.Resources>
+            <DataTemplate x:Key="ShellNavigationItemTemplate" x:DataType="viewModels:ShellNavigationItemViewModel">
+                <NavigationViewItem
+                    AutomationProperties.HelpText="{x:Bind HelpText, Mode=OneWay}"
+                    Content="{x:Bind Title, Mode=OneWay}"
+                    ContextRequested="NavigationItem_ContextRequested"
+                    IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
+                    IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}"
+                    MenuItemsSource="{x:Bind Children, Mode=OneWay}"
+                    SelectsOnInvoked="{x:Bind SelectsOnInvoked, Mode=OneWay}"
+                    Tag="{x:Bind Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="{x:Bind IconGlyph, Mode=OneWay}" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </DataTemplate>
+            <DataTemplate x:Key="ShellNavigationSeparatorTemplate" x:DataType="viewModels:ShellNavigationSeparatorItemViewModel">
+                <NavigationViewItemSeparator />
+            </DataTemplate>
+            <selectors:ShellNavigationItemTemplateSelector
+                x:Key="ShellNavigationItemTemplateSelector"
+                ItemTemplate="{StaticResource ShellNavigationItemTemplate}"
+                SeparatorTemplate="{StaticResource ShellNavigationSeparatorTemplate}" />
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TitleBar
+            x:Name="AppTitleBar"
+            Title="Adaptive Card Workbench"
+            AutoRefreshDragRegions="True"
+            IsBackButtonVisible="False"
+            IsPaneToggleButtonVisible="False"
+            Subtitle="WinUI 3 renderer playground">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="/App.ico" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <NavigationView
+            x:Name="ShellNavigation"
+            Grid.Row="1"
+            AlwaysShowHeader="False"
+            AutomationProperties.Name="Open card navigation"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="True"
+            ItemInvoked="ShellNavigation_ItemInvoked"
+            Loaded="ShellNavigation_Loaded"
+            MenuItemTemplateSelector="{StaticResource ShellNavigationItemTemplateSelector}"
+            PaneDisplayMode="Auto"
+            SelectionChanged="ShellNavigation_SelectionChanged">
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox
+                    x:Name="WorkspaceSearchBox"
+                    AutomationProperties.Name="Search cards and projects"
+                    PlaceholderText="Search cards and projects"
+                    QueryIcon="Find"
+                    QuerySubmitted="WorkspaceSearchBox_QuerySubmitted"
+                    TextChanged="WorkspaceSearchBox_TextChanged" />
+            </NavigationView.AutoSuggestBox>
+            <Frame x:Name="ContentFrame" />
+        </NavigationView>
+    </Grid>
+</Window>

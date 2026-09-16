@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/AdaptiveCardWorkbench/JPSoftworks.AdaptiveCardWorkbench.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
+</Solution>

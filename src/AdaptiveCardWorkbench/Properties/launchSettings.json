@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "AdaptiveCardWorkbench (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AdaptiveCardWorkbench (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": true
+    }
+  }
+}

@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AdaptiveCardWorkbench.Pages.WorkbenchPage"
+    x:Name="WorkbenchRoot"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:editor="using:WinUIEditor"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    AutomationProperties.Name="Adaptive Card editor"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
+    SizeChanged="Page_SizeChanged">
+
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator
+            Key="S"
+            Modifiers="Control"
+            ScopeOwner="{x:Bind WorkbenchRoot}"
+            Invoked="SaveAccelerator_Invoked" />
+        <KeyboardAccelerator
+            Key="F5"
+            ScopeOwner="{x:Bind WorkbenchRoot}"
+            Invoked="RunAccelerator_Invoked" />
+    </Page.KeyboardAccelerators>
+
+    <Grid x:Name="LayoutRoot" RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition x:Name="OutputSplitterRow" Height="5" />
+            <RowDefinition x:Name="OutputPanelRow" Height="150" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            x:Name="WorkspaceGrid"
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+            ColumnSpacing="1"
+            RowSpacing="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="EditorColumn" Width="*" />
+                <ColumnDefinition x:Name="WorkspaceSplitterColumn" Width="5" />
+                <ColumnDefinition x:Name="PreviewColumn" Width="0" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="EditorRow" Height="*" />
+                <RowDefinition x:Name="WorkspaceSplitterRow" Height="0" />
+                <RowDefinition x:Name="PreviewRow" Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid
+                x:Name="EditorsPanel"
+                Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition x:Name="PayloadHeaderRow" Height="34" />
+                    <RowDefinition x:Name="PayloadEditorRow" Height="*" />
+                    <RowDefinition x:Name="EditorSplitterRow" Height="5" />
+                    <RowDefinition x:Name="DataHeaderRow" Height="34" />
+                    <RowDefinition x:Name="DataEditorRow" Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid
+                    x:Name="PayloadHeader"
+                    Padding="8,0"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="Card payload" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Adaptive Card template JSON"
+                        VerticalAlignment="Center" />
+                    <CommandBar
+                        Grid.Column="2"
+                        Style="{StaticResource PaneCommandBarStyle}">
+                        <AppBarButton
+                            x:Name="PayloadUndoButton"
+                            AutomationProperties.Name="Undo card payload edit"
+                            Click="PayloadUndo_Click"
+                            Icon="Undo"
+                            IsEnabled="False"
+                            Label="Undo"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Undo payload edit" />
+                        <AppBarButton
+                            x:Name="PayloadRedoButton"
+                            AutomationProperties.Name="Redo card payload edit"
+                            Click="PayloadRedo_Click"
+                            Icon="Redo"
+                            IsEnabled="False"
+                            Label="Redo"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Redo payload edit" />
+                        <AppBarButton
+                            AutomationProperties.Name="Format card payload JSON"
+                            Click="PayloadFormat_Click"
+                            Icon="AlignLeft"
+                            Label="Format JSON"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Format payload JSON" />
+                        <AppBarSeparator />
+                        <AppBarButton
+                            AutomationProperties.Name="Run the current card and refresh the preview"
+                            Click="Render_Click"
+                            Label="Run"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Run card (F5)">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE768;" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                        <AppBarButton
+                            AutomationProperties.Name="Save the current workspace"
+                            Click="Save_Click"
+                            Icon="Save"
+                            Label="Save"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Save workspace (Ctrl+S)" />
+                        <AppBarButton
+                            x:Name="PayloadMaximizeButton"
+                            AutomationProperties.Name="Maximize card payload pane"
+                            Click="PayloadMaximize_Click"
+                            Label="Maximize"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Maximize payload pane">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE740;" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                    </CommandBar>
+                </Grid>
+                <editor:CodeEditorControl
+                    x:Name="PayloadEditor"
+                    Grid.Row="1"
+                    AutomationProperties.Name="Card payload JSON editor"
+                    HighlightingLanguage="json"
+                    Style="{StaticResource CodeEditorStyle}"
+                    TabIndex="1" />
+
+                <Thumb
+                    x:Name="EditorSplitter"
+                    Grid.Row="2"
+                    AutomationProperties.Name="Resize payload and sample data editors"
+                    DoubleTapped="EditorSplitter_DoubleTapped"
+                    DragDelta="EditorSplitter_DragDelta"
+                    KeyDown="EditorSplitter_KeyDown"
+                    Style="{StaticResource PaneSplitterStyle}" />
+
+                <Grid
+                    x:Name="DataHeader"
+                    Grid.Row="3"
+                    Padding="8,0"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="Sample data" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="JSON object"
+                        VerticalAlignment="Center" />
+                    <CommandBar
+                        Grid.Column="2"
+                        Style="{StaticResource PaneCommandBarStyle}">
+                        <AppBarButton
+                            x:Name="DataUndoButton"
+                            AutomationProperties.Name="Undo sample data edit"
+                            Click="DataUndo_Click"
+                            Icon="Undo"
+                            IsEnabled="False"
+                            Label="Undo"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Undo sample data edit" />
+                        <AppBarButton
+                            x:Name="DataRedoButton"
+                            AutomationProperties.Name="Redo sample data edit"
+                            Click="DataRedo_Click"
+                            Icon="Redo"
+                            IsEnabled="False"
+                            Label="Redo"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Redo sample data edit" />
+                        <AppBarButton
+                            AutomationProperties.Name="Format sample data JSON"
+                            Click="DataFormat_Click"
+                            Icon="AlignLeft"
+                            Label="Format JSON"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Format sample data JSON" />
+                        <AppBarButton
+                            x:Name="DataMaximizeButton"
+                            AutomationProperties.Name="Maximize sample data pane"
+                            Click="DataMaximize_Click"
+                            Label="Maximize"
+                            Style="{StaticResource PaneToolbarButtonStyle}"
+                            ToolTipService.ToolTip="Maximize sample data pane">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE740;" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                    </CommandBar>
+                </Grid>
+                <editor:CodeEditorControl
+                    x:Name="DataEditor"
+                    Grid.Row="4"
+                    AutomationProperties.Name="Sample data JSON editor"
+                    HighlightingLanguage="json"
+                    Style="{StaticResource CodeEditorStyle}"
+                    TabIndex="2" />
+            </Grid>
+
+            <Thumb
+                x:Name="WorkspaceSplitter"
+                Grid.Row="0"
+                Grid.Column="1"
+                AutomationProperties.Name="Resize editor and preview panes"
+                DoubleTapped="WorkspaceSplitter_DoubleTapped"
+                DragDelta="WorkspaceSplitter_DragDelta"
+                KeyDown="WorkspaceSplitter_KeyDown"
+                Style="{StaticResource PaneSplitterStyle}" />
+
+            <Grid
+                x:Name="PreviewPanel"
+                Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="34" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid
+                    Padding="8,0"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Style="{StaticResource SectionTitleStyle}" Text="Preview" />
+                        <Border
+                            Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                            CornerRadius="4"
+                            VerticalAlignment="Center"
+                            Padding="6,2">
+                            <TextBlock FontSize="11" Text="WINUI 3" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <ComboBox
+                            x:Name="PreviewWidthPicker"
+                            Width="132"
+                            AutomationProperties.Name="Preview width"
+                            SelectionChanged="PreviewWidthPicker_SelectionChanged"
+                            SelectedIndex="0"
+                            Style="{StaticResource PaneToolbarComboBoxStyle}"
+                            ToolTipService.ToolTip="Preview width">
+                            <ComboBoxItem Content="Responsive" Tag="0" />
+                            <ComboBoxItem Content="Compact · 320" Tag="320" />
+                            <ComboBoxItem Content="Standard · 480" Tag="480" />
+                        </ComboBox>
+                        <CommandBar
+                            Style="{StaticResource PaneCommandBarStyle}">
+                            <AppBarToggleButton
+                                x:Name="PreviewThemeToggle"
+                                AutomationProperties.Name="Use dark preview theme"
+                                Click="PreviewThemeToggle_Click"
+                                Label="Light"
+                                Style="{StaticResource PaneToolbarToggleButtonStyle}"
+                                ToolTipService.ToolTip="Preview theme: Light">
+                                <AppBarToggleButton.Icon>
+                                    <FontIcon Glyph="&#xE706;" />
+                                </AppBarToggleButton.Icon>
+                            </AppBarToggleButton>
+                            <AppBarButton
+                                x:Name="PreviewMaximizeButton"
+                                AutomationProperties.Name="Maximize preview pane"
+                                Click="PreviewMaximize_Click"
+                                Label="Maximize"
+                                Style="{StaticResource PaneToolbarButtonStyle}"
+                                ToolTipService.ToolTip="Maximize preview pane">
+                                <AppBarButton.Icon>
+                                    <FontIcon Glyph="&#xE740;" />
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                        </CommandBar>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer
+                    x:Name="PreviewScrollViewer"
+                    Grid.Row="1"
+                    AutomationProperties.Name="Rendered Adaptive Card preview"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    ZoomMode="Disabled">
+                    <Grid Padding="12">
+                        <Border
+                            x:Name="PreviewCardSurface"
+                            MinWidth="280"
+                            MaxWidth="720"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            RequestedTheme="Light">
+                            <Grid x:Name="PreviewHost">
+                                <StackPanel
+                                    x:Name="PreviewPlaceholder"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="8">
+                                    <ProgressRing
+                                        x:Name="PreviewProgress"
+                                        Width="24"
+                                        Height="24"
+                                        IsActive="True" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Rendering preview…" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+
+        <Grid
+            x:Name="EmptyWorkspacePanel"
+            Grid.Row="0"
+            AutomationProperties.Name="No open cards"
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+            Visibility="Collapsed">
+            <StackPanel
+                MaxWidth="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="10">
+                <FontIcon
+                    HorizontalAlignment="Center"
+                    FontSize="32"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Glyph="&#xE8A5;" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Text="No open cards" />
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Create a card or restore one from a project's archive."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+                <Button
+                    HorizontalAlignment="Center"
+                    AutomationProperties.Name="Create a new card"
+                    Click="EmptyNewCard_Click"
+                    Content="New card" />
+            </StackPanel>
+        </Grid>
+
+        <Thumb
+            x:Name="OutputSplitter"
+            Grid.Row="1"
+            AutomationProperties.Name="Resize workspace and output panel"
+            DoubleTapped="OutputSplitter_DoubleTapped"
+            DragDelta="OutputSplitter_DragDelta"
+            KeyDown="OutputSplitter_KeyDown"
+            Style="{StaticResource PaneSplitterStyle}" />
+
+        <Grid
+            x:Name="OutputPanel"
+            Grid.Row="2"
+            Background="{ThemeResource LayerFillColorDefaultBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Padding="8,2" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <SelectorBar
+                    x:Name="OutputSelectorBar"
+                    AutomationProperties.Name="Diagnostics view"
+                    SelectionChanged="OutputSelectorBar_SelectionChanged">
+                    <SelectorBar.Resources>
+                        <Thickness x:Key="SelectorBarPadding">0</Thickness>
+                        <Thickness x:Key="SelectorBarItemPadding">8,5,8,3</Thickness>
+                    </SelectorBar.Resources>
+                    <SelectorBarItem
+                        x:Name="OutputSelectorBarItem"
+                        AutomationProperties.Name="Show renderer output"
+                        Text="Output" />
+                    <SelectorBarItem
+                        x:Name="ProblemsSelectorBarItem"
+                        AutomationProperties.Name="Show renderer problems"
+                        Text="Problems" />
+                    <SelectorBarItem
+                        x:Name="ExpandedJsonSelectorBarItem"
+                        AutomationProperties.Name="Show expanded card JSON"
+                        Text="Expanded JSON" />
+                </SelectorBar>
+                <CommandBar
+                    Grid.Column="1"
+                    Style="{StaticResource PaneCommandBarStyle}">
+                    <AppBarButton
+                        x:Name="OutputPanelToggleButton"
+                        AutomationProperties.Name="Collapse output panel"
+                        Click="OutputPanelToggleButton_Click"
+                        Label="Collapse"
+                        Style="{StaticResource PaneToolbarButtonStyle}"
+                        ToolTipService.ToolTip="Collapse output panel">
+                        <AppBarButton.Icon>
+                            <FontIcon Glyph="&#xE70D;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </CommandBar>
+            </Grid>
+
+            <Grid
+                x:Name="OutputPanelBody"
+                Grid.Row="1"
+                Padding="10,6"
+                Background="{ThemeResource LayerFillColorDefaultBrush}">
+                <ScrollViewer
+                    x:Name="OutputScrollViewer"
+                    AutomationProperties.Name="Renderer output"
+                    VerticalScrollBarVisibility="Auto">
+                    <TextBlock
+                        x:Name="OutputText"
+                        IsTextSelectionEnabled="True"
+                        FontFamily="Cascadia Mono, Consolas"
+                        FontSize="12"
+                        Text="Ready. Run the card to refresh renderer output."
+                        TextWrapping="Wrap" />
+                </ScrollViewer>
+                <ScrollViewer
+                    x:Name="ProblemsScrollViewer"
+                    AutomationProperties.Name="Renderer problems"
+                    Visibility="Collapsed"
+                    VerticalScrollBarVisibility="Auto">
+                    <TextBlock
+                        x:Name="ProblemsText"
+                        IsTextSelectionEnabled="True"
+                        FontFamily="Cascadia Mono, Consolas"
+                        FontSize="12"
+                        Text="No problems detected."
+                        TextWrapping="Wrap" />
+                </ScrollViewer>
+                <TextBox
+                    x:Name="ExpandedJsonText"
+                    AutomationProperties.Name="Expanded card JSON"
+                    AcceptsReturn="True"
+                    IsReadOnly="True"
+                    FontFamily="Cascadia Mono, Consolas"
+                    FontSize="12"
+                    PlaceholderText="Run a valid template to inspect its expanded JSON."
+                    TextWrapping="NoWrap"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    Visibility="Collapsed" />
+            </Grid>
+        </Grid>
+
+        <Grid
+            Grid.Row="3"
+            MinHeight="28"
+            Padding="8,0"
+            Background="{ThemeResource LayerFillColorDefaultBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="6">
+                <FontIcon
+                    x:Name="RenderStatusIcon"
+                    FontSize="12"
+                    Glyph="&#xE73E;" />
+                <TextBlock
+                    x:Name="RenderStatusText"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Ready" />
+                <HyperlinkButton
+                    x:Name="ProblemsStatusLink"
+                    Padding="2,0"
+                    AutomationProperties.Name="View renderer problems"
+                    Click="ProblemsStatusLink_Click"
+                    Content="View problems"
+                    Visibility="Collapsed" />
+            </StackPanel>
+            <Grid
+                x:Name="StatusPanel"
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <FontIcon
+                    x:Name="SaveStatusIcon"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Glyph="&#xE73E;" />
+                <TextBlock
+                    x:Name="SaveStatusText"
+                    AutomationProperties.LiveSetting="Polite"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Draft loaded" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
