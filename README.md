@@ -17,6 +17,13 @@ Build, template, and preview [Adaptive Cards](https://adaptivecards.io/) with th
 - Inspect renderer output and validation problems while you work.
 - Switch between light, dark, and system themes.
 
+<div align="center">
+
+<img src="./art/screenshot.jpg" alt="Adaptive Card Workbench screenshot" />
+
+</div>
+
+
 ## Installation
 
 ### Release package
